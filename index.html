@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="Information Popover Component" />
+    <meta name="author" content="ツキノリュウ" />
+    <title>Information Popover Component</title>
+    <!-- reset -->
+    <link href="css/bootstrap-reboot.min.css" rel="stylesheet" type="text/css" />
+    <!-- site -->
+    <link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <section class="container">
+        <h1 class="container__title">Information Popover Component</h1>
+        <div class="popoverPanel">
+            <div class="demo">
+                <div class="demo__item" v-for="(item, index) in popover" :key="index">
+                    <div class="demo__item__avatar">
+                        <img :src="item.picture.large" alt="photo">
+                    </div>
+                    <h6>{{item.name.first}} {{item.name.last}}</h6>
+                    <popover-panel :panel-data="item" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <!-- axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- Font Awesome -->
+    <script src="js/solid.min.js"></script>
+    <script src="js/fontawesome.min.js"></script>
+    <script>
+        const popoverContent = {
+            template:
+                `
+            <transition name="slide" mode="in-out" appear>
+                <div tabindex="-1" class="panel__pop" v-if="isShow" @mouseover="isFocus = true" @mouseleave="isFocus = false" @blur="isShow = false">{{data}}</div>
+            </transition>
+            `,
+            props: ['data'],
+            data() {
+                return {
+                    isShow: false, // show content
+                    isFocus: false // set focus
+                };
+            },
+        };
+        const popoverPanel = {
+            template:
+                `
+                <div class="panel">
+                    <popoverContent :data="contentData" />
+                    <div class="panel__trigger">
+                        <button type="button" class="panel__trigger__button" @click="showInfo(panelData.email)" @blur="hideInfo">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                        <button type="button" class="panel__trigger__button" @click="showInfo(panelData.phone)" @blur="hideInfo">
+                            <i class="fas fa-phone"></i>
+                        </button>
+                        <button type="button" class="panel__trigger__button" @click="showInfo(address)" @blur="hideInfo">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            `,
+            components: {
+                'popoverContent': popoverContent
+            },
+            props: ['panelData'],
+            data() {
+                return {
+                    contentData: {},
+                };
+            },
+            computed: {
+                address() {
+                    return this.panelData.location.country + '' + this.panelData.location.state + '' + this.panelData.location.city + '' + this.panelData.location.street.name;
+                }
+            },
+            methods: {
+                showInfo(data) {
+                    this.contentData = data;
+                    this.$children[0].isShow = !this.$children[0].isShow;
+                },
+                hideInfo() {
+                    this.$children[0].isFocus ? (this.$children[0].isShow = true) : (this.$children[0].isShow = false);
+                },
+            }
+        };
+
+        const vm = new Vue({
+            el: '.popoverPanel',
+            components: {
+                'popoverPanel': popoverPanel
+            },
+            data() {
+                return {
+                    popover: [],
+                }
+            },
+            methods: {
+                demoData() {
+                    const url = 'https://randomuser.me/api/?results=10'; // for data demo, use random user generator API
+                    let vm = this;
+                    axios.get(url).then((response) => {
+                        vm.popover = response.data.results;
+                    });
+                },
+            },
+            created() {
+                this.demoData();
+            },
+        });
+    </script>
+</body>
+
+</html>

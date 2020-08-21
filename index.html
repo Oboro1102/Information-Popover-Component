@@ -9,6 +9,8 @@
     <title>Information Popover Component</title>
     <!-- reset -->
     <link href="css/bootstrap-reboot.min.css" rel="stylesheet" type="text/css" />
+    <!-- css.gg -->
+    <link href='https://css.gg/spinner-alt.css' rel='stylesheet'>
     <!-- site -->
     <link href="css/main.css" rel="stylesheet" type="text/css" />
 </head>
@@ -17,6 +19,9 @@
     <section class="container">
         <h1 class="container__title">Information Popover Component</h1>
         <div class="popoverPanel">
+            <div class="loading" v-if="isLoading">
+                <i class="gg-spinner-alt"></i>
+            </div>
             <div class="demo">
                 <div class="demo__item" v-for="(item, index) in popover" :key="index">
                     <div class="demo__item__avatar">
@@ -90,7 +95,7 @@
                     this.$children[0].isShow = !this.$children[0].isShow;
                 },
                 hideInfo() {
-                    this.$children[0].isFocus ? (this.$children[0].isShow = true) : (this.$children[0].isShow = false);
+                    this.$children[0].isFocus ? this.$children[0].isShow = true : this.$children[0].isShow = false;
                 },
             }
         };
@@ -103,14 +108,20 @@
             data() {
                 return {
                     popover: [],
+                    isLoading: false
                 }
             },
             methods: {
                 demoData() {
-                    const url = 'https://randomuser.me/api/?results=10'; // for data demo, use random user generator API
-                    let vm = this;
-                    axios.get(url).then((response) => {
+                    const url = 'https://randomuser.me/api/?results=10', // for data demo, use random user generator API
+                        vm = this;
+                    vm.isLoading = true;
+                    axios.get(url).then(response => {
                         vm.popover = response.data.results;
+                        vm.isLoading = false;
+                    }).catch(error => {
+                        console.log(error);
+                        alert('Somthing go wrong, please retry later.');
                     });
                 },
             },

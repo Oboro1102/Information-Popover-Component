@@ -118,7 +118,9 @@
                     vm.isLoading = true;
                     axios.get(url).then(response => {
                         vm.popover = response.data.results;
-                        vm.isLoading = false;
+                        vm.$nextTick(() => {
+                            vm.isLoading = false;
+                        });
                     }).catch(error => {
                         console.log(error);
                         alert('Somthing go wrong, please retry later.');

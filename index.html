@@ -19,10 +19,10 @@
     <section class="container">
         <h1 class="container__title">Information Popover Component</h1>
         <div class="popoverPanel">
-            <div class="loading" v-if="isLoading">
-                <i class="gg-spinner-alt"></i>
-            </div>
             <div class="demo">
+                <div class="loading" v-if="isLoading">
+                    <i class="gg-spinner-alt"></i>
+                </div>
                 <div class="demo__item" v-for="(item, index) in popover" :key="index">
                     <div class="demo__item__avatar">
                         <img :src="item.picture.large" alt="photo">
